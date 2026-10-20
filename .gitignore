@@ -16,3 +16,5 @@ env/*.env
 # Système et éditeurs
 .DS_Store
 *.log
+
+.vscode/settings.json
