@@ -135,6 +135,13 @@ entreprises ; les autres utilisateurs ne voient que les entreprises actives.
 Liste les offres visibles par l'utilisateur connecté, de l'année académique la plus
 récente à la plus ancienne, puis de la plus récente à la plus ancienne.
 
+### Filtre facultatif
+
+- `period` : limite les résultats à la période `P1`, `P2` ou `OTHER`.
+- Sans ce paramètre, toutes les offres normalement visibles sont retournées.
+
+Exemple : `GET /offers?period=P1`
+
 | Profil | Offres retournées |
 |---|---|
 | Administrateur | Toutes |
@@ -168,3 +175,4 @@ récente à la plus ancienne, puis de la plus récente à la plus ancienne.
 
 - `401` `UNAUTHENTICATED` : session absente ou invalide.
 - `403` `FORBIDDEN` : contact seulement promoteur ou signataire.
+- `400` `INVALID_QUERY` : `period` est répété ou ne vaut pas `P1`, `P2` ou `OTHER`.

@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import OffersPage from "../src/pages/OffersPage.tsx";
 import { adminUser, contactUser, stubFetch, studentUser } from "./helpers/fetchMock.ts";
@@ -24,16 +24,30 @@ const offers = [
 
 describe("OffersPage", () => {
   it("affiche les offres avec leurs libellés français", async () => {
-    stubFetch({ "/api/offers": () => Response.json(offers) });
+    const fetchMock = stubFetch({ "/api/offers": () => Response.json(offers) });
 
     render(<OffersPage user={contactUser} token="jeton" onUnauthorized={vi.fn()} />);
 
+    expect(fetchMock).toHaveBeenCalledWith("/api/offers", expect.anything());
     expect(await screen.findByText("Refonte du portail client")).toBeInTheDocument();
     expect(screen.getByText("Soumise")).toBeInTheDocument();
     expect(screen.getByText("Attribuée")).toBeInTheDocument();
-    expect(screen.getByText("Autre")).toBeInTheDocument();
+    expect(screen.getByRole("cell", { name: "Autre" })).toBeInTheDocument();
     expect(screen.getByText("2 offres")).toBeInTheDocument();
     expect(screen.getByText("Les offres que vous avez déposées.")).toBeInTheDocument();
+  });
+
+  it("transmet la période sélectionnée à l'API", async () => {
+    const fetchMock = stubFetch({ "/api/offers": () => Response.json(offers) });
+
+    render(<OffersPage user={contactUser} token="jeton" onUnauthorized={vi.fn()} />);
+    await screen.findByText("Refonte du portail client");
+
+    fireEvent.change(screen.getByLabelText("Période"), { target: { value: "P1" } });
+
+    await waitFor(() =>
+      expect(fetchMock).toHaveBeenCalledWith("/api/offers?period=P1", expect.anything()),
+    );
   });
 
   it("adapte la description au profil", async () => {

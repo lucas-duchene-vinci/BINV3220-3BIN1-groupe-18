@@ -13,6 +13,11 @@ beforeEach(() => {
 const listOffersAs = (kind: UserKind, id: number) =>
   request(app).get("/offers").set("Authorization", tokenFor(kind, id));
 
+const listOffersAsWithPeriod = (kind: UserKind, id: number, period: string) =>
+  request(app)
+    .get(`/offers?period=${period}`)
+    .set("Authorization", tokenFor(kind, id));
+
 const offerIds = (body: { id: number }[]): number[] => body.map((offer) => offer.id);
 
 describe("GET /offers : accès", () => {
@@ -95,5 +100,36 @@ describe("GET /offers : visibilité selon le profil", () => {
     expect(Object.keys(response.body[0]).sort()).toEqual(
       ["academicYear", "companyShortName", "id", "period", "status", "title"],
     );
+  });
+});
+
+describe("GET /offers : filtre par période", () => {
+  it("filtre les offres d'un administrateur sans modifier sa visibilité", async () => {
+    const response = await listOffersAsWithPeriod("ADMIN", ADMINISTRATOR.ANNE_LECLERCQ, "P1");
+
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveLength(1);
+    expect(response.body[0].period).toBe("P1");
+    expect(response.body[0].id).toBe(OFFER.PDF_REPORTS);
+  });
+
+  it("combine le filtre de période avec la visibilité d'un étudiant", async () => {
+    const response = await listOffersAsWithPeriod("STUDENT", STUDENT.LUCAS_DUPONT, "P2");
+
+    expect(response.status).toBe(200);
+    expect(response.body.map((offer: { id: number }) => offer.id)).toEqual([
+      OFFER.INTERNAL_CHATBOT,
+      OFFER.DATA_QUALITY,
+      OFFER.FLEET_APP,
+      OFFER.BILLING_API,
+    ]);
+    expect(response.body.every((offer: { period: string }) => offer.period === "P2")).toBe(true);
+  });
+
+  it("refuse une période inconnue", async () => {
+    const response = await listOffersAsWithPeriod("ADMIN", ADMINISTRATOR.ANNE_LECLERCQ, "P3");
+
+    expect(response.status).toBe(400);
+    expect(response.body.error.code).toBe("INVALID_QUERY");
   });
 });
