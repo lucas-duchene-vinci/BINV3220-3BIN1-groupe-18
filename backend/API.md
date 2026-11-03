@@ -176,3 +176,56 @@ Exemple : `GET /offers?period=P1`
 - `401` `UNAUTHENTICATED` : session absente ou invalide.
 - `403` `FORBIDDEN` : contact seulement promoteur ou signataire.
 - `400` `INVALID_QUERY` : `period` est répété ou ne vaut pas `P1`, `P2` ou `OTHER`.
+
+## Candidatures étudiantes
+
+Les trois routes suivantes sont réservées aux étudiants. Elles utilisent le compte
+connecté : un étudiant ne peut jamais consulter ou retirer la candidature d'un autre.
+
+### GET /applications
+
+Retourne les candidatures de l'étudiant, avec l'offre et son statut.
+
+```json
+[
+  {
+    "id": 1,
+    "offerId": 1,
+    "offerTitle": "Application React de gestion de flotte",
+    "companyShortName": "Lumen Digital",
+    "academicYear": "2026-2027",
+    "period": "P2",
+    "message": "Le développement React m'intéresse particulièrement.",
+    "status": "IN_PROGRESS",
+    "appliedAt": "2026-10-02 18:10:00"
+  }
+]
+```
+
+`status` vaut `IN_PROGRESS`, `SELECTED`, `REJECTED` ou `WITHDRAWN`.
+
+### POST /applications
+
+Crée une candidature pour une offre publiée.
+
+```json
+{ "offerId": 7, "message": "Mon message facultatif" }
+```
+
+`message` est facultatif, est trimé et ne peut pas dépasser 1000 caractères. Une seule
+candidature active est possible pour un étudiant et une offre ; une candidature retirée
+reste conservée et permet une nouvelle candidature.
+
+- `201` : candidature créée.
+- `400` `INVALID_BODY` : identifiant ou message invalide.
+- `409` `OFFER_NOT_PUBLISHED` : l'offre n'est pas publiée.
+- `409` `APPLICATION_EXISTS` : une candidature active existe déjà.
+
+### DELETE /applications/:id
+
+Retire la candidature de l'étudiant connecté si elle est `IN_PROGRESS`. La réponse
+retourne la candidature avec le statut `WITHDRAWN`.
+
+- `200` : candidature retirée.
+- `404` `APPLICATION_NOT_FOUND` : candidature absente ou appartenant à un autre étudiant.
+- `409` `APPLICATION_PROCESSED` : candidature déjà `SELECTED` ou `REJECTED`.
