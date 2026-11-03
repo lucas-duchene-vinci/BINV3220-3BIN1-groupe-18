@@ -1,8 +1,10 @@
+import { useState } from "react";
 import EmptyState from "../components/EmptyState.tsx";
 import ErrorState from "../components/ErrorState.tsx";
 import LoadingState from "../components/LoadingState.tsx";
 import OfferTable from "../components/OfferTable.tsx";
 import { useOffers } from "../hooks/useOffers.ts";
+import { PERIOD_CODES, type PeriodCode } from "../models/offer.ts";
 import type { User } from "../models/user.ts";
 
 interface OffersPageProps {
@@ -18,7 +20,8 @@ const DESCRIPTIONS = {
 } as const;
 
 const OffersPage = ({ user, token, onUnauthorized }: OffersPageProps) => {
-  const { offers, isLoading, error } = useOffers(token, onUnauthorized);
+  const [period, setPeriod] = useState<PeriodCode | undefined>();
+  const { offers, isLoading, error } = useOffers(token, period, onUnauthorized);
 
   const renderContent = () => {
     if (error) return <ErrorState message={error} />;
@@ -38,6 +41,23 @@ const OffersPage = ({ user, token, onUnauthorized }: OffersPageProps) => {
     <section>
       <h1>Offres de stage</h1>
       <p>{DESCRIPTIONS[user.kind]}</p>
+      <label>
+        <span>Période</span>
+        <select
+          aria-label="Période"
+          value={period ?? ""}
+          onChange={(event) =>
+            setPeriod(event.target.value === "" ? undefined : (event.target.value as PeriodCode))
+          }
+        >
+          <option value="">Toutes les périodes</option>
+          {PERIOD_CODES.map((code) => (
+            <option key={code} value={code}>
+              {code === "OTHER" ? "Autre" : code}
+            </option>
+          ))}
+        </select>
+      </label>
       {renderContent()}
     </section>
   );
