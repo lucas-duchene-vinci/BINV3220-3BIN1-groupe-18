@@ -1,6 +1,6 @@
 import { NavLink } from "react-router";
 import type { User } from "../models/user.ts";
-import { canListOffers } from "../utils/permissions.ts";
+import { canListOffers, canManageApplications } from "../utils/permissions.ts";
 
 interface NavBarProps {
   user: User;
@@ -12,6 +12,7 @@ const NavBar = ({ user }: NavBarProps) => (
       Accueil
     </NavLink>
     {canListOffers(user) && <NavLink to="/offres">Offres</NavLink>}
+    {canManageApplications(user) && <NavLink to="/candidatures">Candidatures</NavLink>}
     <NavLink to="/entreprises">Entreprises</NavLink>
   </nav>
 );

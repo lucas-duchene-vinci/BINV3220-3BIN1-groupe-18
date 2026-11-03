@@ -4,11 +4,12 @@ import Layout from "./components/Layout.tsx";
 import LoadingState from "./components/LoadingState.tsx";
 import { useAuth } from "./hooks/useAuth.ts";
 import CompaniesPage from "./pages/CompaniesPage.tsx";
+import ApplicationsPage from "./pages/ApplicationsPage.tsx";
 import HomePage from "./pages/HomePage.tsx";
 import LoginPage from "./pages/LoginPage.tsx";
 import NotFoundPage from "./pages/NotFoundPage.tsx";
 import OffersPage from "./pages/OffersPage.tsx";
-import { canListOffers } from "./utils/permissions.ts";
+import { canListOffers, canManageApplications } from "./utils/permissions.ts";
 
 const App = () => {
   const auth = useAuth();
@@ -26,6 +27,14 @@ const App = () => {
             path="/offres"
             element={
               <OffersPage user={auth.user} token={auth.token} onUnauthorized={auth.logout} />
+            }
+          />
+        )}
+        {canManageApplications(auth.user) && (
+          <Route
+            path="/candidatures"
+            element={
+              <ApplicationsPage token={auth.token} onUnauthorized={auth.logout} />
             }
           />
         )}
