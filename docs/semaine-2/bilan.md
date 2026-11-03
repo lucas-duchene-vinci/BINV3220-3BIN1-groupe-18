@@ -71,3 +71,7 @@ Utilisation des consignes du cours pour encadré l'agent ia dans la direction qu
 * Ce que j'aurais pu mieux faire pour garder un contrôle encore plus élevé: 
 
 - Lui écrire un prompt encore plus concis, même si les modèles sont plus évolués et qu'ils comprennent mieux avec des prompts simplifier, la marge d'erreur existe toujours (preuve: non-conformité du développement par étape demandé). 
+
+* Résultat test e2e manuel: 
+
+- Test e2e manuel après avoir fait la PR: Les tests sont qualitatifs, la vision de ce que j'attendais suite à notre plan avec l'agent est fonctionnel et sans accroc, potentiellement une possibilité d'améliorer la lisibilité d'une candidature et un meilleur affichage des erreurs, mais pour une version de démo, le concept est bien.
