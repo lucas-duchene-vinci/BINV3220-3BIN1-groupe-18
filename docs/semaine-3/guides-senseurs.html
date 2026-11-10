@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Guides et senseurs — Gesta</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #172033;
+      --muted: #526078;
+      --line: #cbd5e1;
+      --paper: #ffffff;
+      --wash: #f4f7fb;
+      --guide: #e8f1ff;
+      --sensor: #e8f8ef;
+      --accent: #2457a6;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--wash);
+      font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+    main { max-width: 1280px; margin: 0 auto; padding: 2rem 1rem 4rem; }
+    h1, h2 { line-height: 1.2; }
+    h1 { margin-bottom: .35rem; }
+    h2 { margin-top: 2.4rem; border-bottom: 2px solid var(--line); padding-bottom: .4rem; }
+    h3 { margin-bottom: .35rem; }
+    a { color: var(--accent); }
+    .intro, .note, .card {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 1rem 1.2rem;
+    }
+    .intro { margin: 1rem 0 1.5rem; }
+    .note { border-left: 5px solid var(--accent); margin: 1rem 0; }
+    .matrix-wrap, .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; background: var(--paper); }
+    th, td { border: 1px solid var(--line); padding: .8rem; vertical-align: top; text-align: left; }
+    th { background: #e9eef6; }
+    .axis { width: 18%; font-weight: 700; }
+    .guide-cell { background: var(--guide); }
+    .sensor-cell { background: var(--sensor); }
+    .tag {
+      display: inline-block;
+      border-radius: 999px;
+      padding: .15rem .55rem;
+      font-size: .85rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .done { background: #c8f0d7; color: #14532d; }
+    .described { background: #e5e7eb; color: #374151; }
+    .small { color: var(--muted); font-size: .93rem; }
+    code { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: .9em; }
+    ul { margin-top: .45rem; }
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
+    footer { margin-top: 2rem; color: var(--muted); font-size: .9rem; }
+  </style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Guides et senseurs du dépôt Gesta</h1>
+    <p class="small">Inventaire réalisé le 10 novembre 2026 — distinction feedforward / feedback selon la matrice fournie.</p>
+  </header>
+
+  <section class="intro">
+    <h2>Définitions et périmètre</h2>
+    <p><strong>Guide</strong> : mécanisme qui donne des consignes avant l'action, à un agent humain ou au programme.
+      <strong>Senseur</strong> : mécanisme qui observe le code ou son comportement et produit un retour.</p>
+    <p>L'inventaire couvre les fichiers suivis du dépôt : documentation, configuration, scripts, règles
+      d'exécution et tests. Les dépendances de <code>node_modules/</code>, les sorties de build <code>dist/</code>
+      et la base binaire locale ne sont pas des mécanismes du projet et sont exclues.</p>
+    <div class="note"><strong>Lecture du statut :</strong> <span class="tag done">exécuté et vérifié</span>
+      signifie qu'une commande a produit le résultat indiqué pendant cette séance.
+      <span class="tag described">décrit/configuré seulement</span> signifie que le mécanisme existe mais
+      n'a pas été déclenché ici, ou qu'il demande une action humaine.</div>
+  </section>
+
+  <section>
+    <h2>Matrice de classement</h2>
+    <div class="matrix-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th>Guide — feedforward</th>
+            <th>Senseur — feedback</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th class="axis">Inférentiel<br><span class="small">(interprété par une personne)</span></th>
+            <td class="guide-cell">
+              <strong>Documentation et consignes de contribution</strong><br>
+              <a href="../../README.md">README.md</a>,
+              <a href="../utilitaire/architecture.md">architecture.md</a>,
+              <a href="../utilitaire/cdc_gesta_developpement.md">cdc_gesta_developpement.md</a>,
+              <a href="../utilitaire/seed.md">seed.md</a>,
+              <a href="../../backend/API.md">backend/API.md</a> et
+              <a href="../../.github/pull_request_template.md">pull_request_template.md</a>.
+            </td>
+            <td class="sensor-cell">
+              <strong>Aucun senseur inférentiel automatique trouvé</strong><br>
+              Le template de PR demande une revue humaine, un test navigateur et une conversation exportée,
+              mais ne réalise ni n'enregistre lui-même ces vérifications.
+            </td>
+          </tr>
+          <tr>
+            <th class="axis">Computationnel<br><span class="small">(règles ou calculs exécutables)</span></th>
+            <td class="guide-cell">
+              <strong>Scripts, configurations et règles runtime</strong><br>
+              <a href="../../package.json">package.json</a>, les scripts des deux workspaces,
+              les configurations TypeScript/Oxlint, les migrations SQLite et
+              <a href="../../backend/src/services/permissions.ts">permissions.ts</a>.
+            </td>
+            <td class="sensor-cell">
+              <strong>Validation exécutable</strong><br>
+              Oxlint, TypeScript, Vitest/Supertest/Testing Library, les builds TypeScript/Vite et les tests
+              de contraintes SQLite.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Fiches vérifiables des mécanismes présents</h2>
+    <div class="card-grid">
+      <article class="card">
+        <h3>G1 — Documentation de cadrage</h3>
+        <p><strong>Fichiers :</strong> <a href="../../README.md">README.md</a>,
+          <a href="../utilitaire/architecture.md">docs/utilitaire/architecture.md</a>,
+          <a href="../utilitaire/cdc_gesta_developpement.md">docs/utilitaire/cdc_gesta_developpement.md</a>,
+          <a href="../utilitaire/seed.md">docs/utilitaire/seed.md</a> et
+          <a href="../../backend/API.md">backend/API.md</a>.</p>
+        <p><strong>Demande/impose :</strong> décrit l'architecture en couches, les contrats API, les profils,
+          les statuts, le format des erreurs, les commandes et les règles de migration.</p>
+        <p><strong>Exemple :</strong> le jeton est envoyé comme valeur complète de l'en-tête
+          <code>Authorization</code>, sans préfixe <code>Bearer</code> ; une migration doit être un nouveau
+          fichier ordonné.</p>
+        <p><strong>État :</strong> <span class="tag described">décrit/configuré seulement</span> — consulté pendant
+          l'inventaire, mais ce guide ne s'exécute pas.</p>
+      </article>
+
+      <article class="card">
+        <h3>G2 — Template de pull request</h3>
+        <p><strong>Fichier :</strong> <a href="../../.github/pull_request_template.md">.github/pull_request_template.md</a>.</p>
+        <p><strong>Demande/impose :</strong> renseigner la fonctionnalité, les changements, les vérifications,
+          les tests d'erreur, les droits backend, la documentation API, les migrations et le test navigateur.</p>
+        <p><strong>Exemple :</strong> la checklist exige que <code>npm run check</code> passe sans erreur ni
+          avertissement.</p>
+        <p><strong>État :</strong> <span class="tag described">décrit/configuré seulement</span> — le fichier a été
+          lu ; aucune PR n'a été créée ou revue pendant cette séance.</p>
+      </article>
+
+      <article class="card">
+        <h3>G3 — Guides computationnels de qualité</h3>
+        <p><strong>Fichiers :</strong> <a href="../../package.json">package.json</a>,
+          <a href="../../backend/package.json">backend/package.json</a>,
+          <a href="../../frontend/package.json">frontend/package.json</a>,
+          <a href="../../backend/tsconfig.json">backend/tsconfig.json</a>,
+          <a href="../../frontend/tsconfig.app.json">frontend/tsconfig.app.json</a>,
+          <a href="../../backend/.oxlintrc.json">backend/.oxlintrc.json</a> et
+          <a href="../../frontend/.oxlintrc.json">frontend/.oxlintrc.json</a>.</p>
+        <p><strong>Demande/impose :</strong> Node >= 22.14, TypeScript strict, imports cohérents, absence de
+          <code>any</code> explicite, égalité stricte, règles React Hooks et zéro avertissement Oxlint.</p>
+        <p><strong>Exemple :</strong> <code>npm run check</code> enchaîne lint, typecheck, tests et build.</p>
+        <p><strong>État :</strong> <span class="tag done">exécuté et vérifié</span> — la commande complète a réussi.</p>
+      </article>
+
+      <article class="card">
+        <h3>G4 — Guides computationnels métier et données</h3>
+        <p><strong>Fichiers :</strong> <a href="../../backend/src/services/permissions.ts">permissions.ts</a>,
+          <a href="../../backend/src/middlewares/authenticate.ts">authenticate.ts</a>,
+          <a href="../../backend/src/middlewares/authorize.ts">authorize.ts</a> et
+          <a href="../../backend/src/db/migrations/001_initial.sql">001_initial.sql</a> /
+          <a href="../../backend/src/db/migrations/002_applications_active_unique.sql">002_applications_active_unique.sql</a>.</p>
+        <p><strong>Demande/impose :</strong> les permissions sont évaluées avant l'opération (401/403) et SQLite
+          impose les clés étrangères, les valeurs autorisées, les dates cohérentes et une seule candidature active.</p>
+        <p><strong>Exemple :</strong> <code>canListOffers</code> autorise admin, étudiant ou contact déposant ;
+          l'index unique partiel interdit deux candidatures non retirées pour le même étudiant et la même offre.</p>
+        <p><strong>État :</strong> <span class="tag done">exécuté et vérifié</span> — couvert par les tests backend
+          lancés dans <code>npm.cmd run check</code>.</p>
+      </article>
+
+      <article class="card">
+        <h3>S1 — Oxlint</h3>
+        <p><strong>Outil :</strong> scripts <code>lint</code> des deux workspaces et leurs fichiers
+          <code>.oxlintrc.json</code>.</p>
+        <p><strong>Observe :</strong> violations de style et de règles TypeScript/React/JavaScript ; les warnings
+          sont refusés par <code>--deny-warnings</code>.</p>
+        <p><strong>Résultat :</strong> aucune erreur ni avertissement signalé.</p>
+        <p><strong>État :</strong> <span class="tag done">exécuté et vérifié</span> pendant
+          <code>npm.cmd run check</code>.</p>
+      </article>
+
+      <article class="card">
+        <h3>S2 — TypeScript</h3>
+        <p><strong>Outil :</strong> <code>tsc --noEmit</code> backend et <code>tsc -b</code> frontend via les scripts
+          <code>typecheck</code>.</p>
+        <p><strong>Observe :</strong> erreurs de typage, imports, variables inutilisées, branches incomplètes et
+          incohérences de casse selon les options strictes.</p>
+        <p><strong>Résultat :</strong> vérification backend et frontend réussie, sans diagnostic.</p>
+        <p><strong>État :</strong> <span class="tag done">exécuté et vérifié</span>.</p>
+      </article>
+
+      <article class="card">
+        <h3>S3 — Tests automatisés</h3>
+        <p><strong>Outils/fichiers :</strong> Vitest, Supertest et Testing Library dans
+          <a href="../../backend/tests">backend/tests/</a> et <a href="../../frontend/tests">frontend/tests/</a>.</p>
+        <p><strong>Observe :</strong> comportements API, authentification/permissions, contraintes/migrations SQLite
+          et comportements des pages/hooks React.</p>
+        <p><strong>Résultat :</strong> backend : 10 fichiers, 117 tests réussis ; frontend : 8 fichiers, 49 tests
+          réussis.</p>
+        <p><strong>État :</strong> <span class="tag done">exécuté et vérifié</span>.</p>
+      </article>
+
+      <article class="card">
+        <h3>S4 — Builds</h3>
+        <p><strong>Outils :</strong> <code>tsc -p tsconfig.build.json</code> et copie des migrations backend ;
+          <code>tsc -b</code> et <code>vite build</code> frontend.</p>
+        <p><strong>Observe :</strong> erreurs de compilation, résolution des modules et production des artefacts
+          frontend/backend.</p>
+        <p><strong>Résultat :</strong> les deux builds ont réussi ; Vite a transformé 60 modules et produit le bundle.</p>
+        <p><strong>État :</strong> <span class="tag done">exécuté et vérifié</span>.</p>
+      </article>
+    </div>
+  </section>
+
+  <section>
+    <h2>Traçabilité EF-32 / EF-33 — couverture des tests</h2>
+    <p>Source des exigences : <a href="../semaine-2/bilan.md">docs/semaine-2/bilan.md</a> et
+      <a href="../semaine-2/conversation.md">docs/semaine-2/conversation.md</a>. Les noms ci-dessous
+      sont ceux des tests dans <a href="../../backend/tests/applications.test.ts">backend/tests/applications.test.ts</a>.
+      Une ligne est « couverte » seulement si les assertions vérifient le résultat attendu.</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Exigence</th>
+            <th>Cas à vérifier</th>
+            <th>Test existant (fichier et nom)</th>
+            <th>Assertions utiles</th>
+            <th>Couverture</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>EF-32</td>
+            <td>Candidater à une offre publiée avec message facultatif, message trimé et statut initial.</td>
+            <td><code>crée une candidature avec un message facultatif</code></td>
+            <td><code>status === 201</code>, <code>message === "Mon message"</code>,
+              <code>status === "IN_PROGRESS"</code>.</td>
+            <td><span class="tag done">Couvert</span></td>
+          </tr>
+          <tr>
+            <td>EF-32</td>
+            <td>Candidater sans message.</td>
+            <td><code>accepte une candidature sans message et refuse une offre non publiée</code></td>
+            <td><code>created.status === 201</code> et <code>created.body.message === null</code>.</td>
+            <td><span class="tag done">Couvert</span></td>
+          </tr>
+          <tr>
+            <td>EF-32</td>
+            <td>Refuser une offre non publiée.</td>
+            <td>Même test que ci-dessus.</td>
+            <td><code>unpublished.status === 409</code> et code
+              <code>OFFER_NOT_PUBLISHED</code>.</td>
+            <td><span class="tag done">Couvert</span></td>
+          </tr>
+          <tr>
+            <td>EF-32</td>
+            <td>Refuser une seconde candidature active sur la même offre.</td>
+            <td><code>refuse une seconde candidature active sur la même offre</code></td>
+            <td><code>status === 409</code> et code <code>APPLICATION_EXISTS</code>.</td>
+            <td><span class="tag done">Couvert</span></td>
+          </tr>
+          <tr>
+            <td>EF-32</td>
+            <td>Refuser un message de plus de 1000 caractères.</td>
+            <td><code>refuse un message qui dépasse la limite autorisée</code></td>
+            <td><code>status === 400</code> et code <code>INVALID_BODY</code>.</td>
+            <td><span class="tag done">Couvert</span></td>
+          </tr>
+          <tr>
+            <td>EF-32</td>
+            <td>Retirer une candidature encore en cours.</td>
+            <td><code>retire une candidature en cours</code></td>
+            <td><code>status === 200</code> et réponse <code>status === "WITHDRAWN"</code>.</td>
+            <td><span class="tag done">Couvert</span></td>
+          </tr>
+          <tr>
+            <td>EF-32</td>
+            <td>Refuser le retrait d'une candidature traitée.</td>
+            <td><code>refuse le retrait d'une candidature déjà traitée</code></td>
+            <td><code>status === 409</code> et code <code>APPLICATION_PROCESSED</code>.</td>
+            <td><span class="tag done">Couvert</span></td>
+          </tr>
+          <tr>
+            <td>EF-32</td>
+            <td>Un étudiant ne peut pas retirer la candidature d'un autre.</td>
+            <td><code>refuse le retrait d'une candidature appartenant à un autre étudiant</code></td>
+            <td><code>status === 404</code> et code <code>APPLICATION_NOT_FOUND</code>.</td>
+            <td><span class="tag done">Couvert</span></td>
+          </tr>
+          <tr>
+            <td>EF-32</td>
+            <td>Après retrait, une nouvelle candidature active est possible.</td>
+            <td><code>autorise une nouvelle candidature après retrait</code></td>
+            <td>Retrait préalable, puis <code>status === 201</code> et
+              <code>status === "IN_PROGRESS"</code>.</td>
+            <td><span class="tag done">Couvert</span></td>
+          </tr>
+          <tr>
+            <td>EF-33</td>
+            <td>Consulter uniquement ses candidatures, jamais celles d'un autre étudiant.</td>
+            <td><code>ne retourne que les candidatures de l'étudiant connecté</code></td>
+            <td>Lucas reçoit l'id 1 ; Inès reçoit les ids 2 et 5 ; assertion
+              <code>every(id !== 1)</code>.</td>
+            <td><span class="tag done">Couvert</span></td>
+          </tr>
+          <tr>
+            <td>EF-33</td>
+            <td>Retourner les statuts En cours et Retirée.</td>
+            <td>Même test que ci-dessus.</td>
+            <td>Inès reçoit explicitement <code>IN_PROGRESS</code> et <code>WITHDRAWN</code>.</td>
+            <td><span class="tag done">Couvert</span></td>
+          </tr>
+          <tr>
+            <td>EF-33</td>
+            <td>Retourner les statuts Retenue et Non retenue.</td>
+            <td><code>retourne les statuts métier d'une candidature</code></td>
+            <td>Mateusz reçoit <code>SELECTED</code> ; Léa reçoit <code>REJECTED</code>.</td>
+            <td><span class="tag done">Couvert</span></td>
+          </tr>
+          <tr>
+            <td>EF-33</td>
+            <td>Liste vide pour un étudiant sans candidature.</td>
+            <td><code>retourne une liste vide pour un étudiant sans candidature</code></td>
+            <td><code>status === 200</code> et <code>body === []</code> pour Dmytro.</td>
+            <td><span class="tag done">Ajouté</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note"><strong>Cas ajouté :</strong> le test utilise l'étudiant Dmytro, présent dans le seed
+      sans candidature, et vérifie explicitement que l'API renvoie une réponse 200 contenant exactement
+      une liste vide.</div>
+  </section>
+
+  <section>
+    <h2>Journal de vérification de cette séance</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Commande</th><th>Résultat</th><th>Interprétation</th></tr></thead>
+        <tbody>
+          <tr><td><code>npm run check</code></td><td>Bloquée par la politique PowerShell sur le wrapper <code>npm</code>.</td><td>Particularité du shell Windows, pas un échec du projet.</td></tr>
+          <tr><td><code>npm.cmd run test -w backend -- tests/applications.test.ts</code></td><td><strong>Réussi</strong> : 1 fichier, 10 tests.</td><td>Validation ciblée des nouveaux cas EF-32/EF-33.</td></tr>
+          <tr><td><code>npm.cmd run check</code></td><td>À relancer après l'ajout du test : backend 121 tests attendus, frontend 49 tests et builds.</td><td>La validation ciblée est relancée ci-dessous ; la validation complète devra confirmer 170 tests.</td></tr>
+          <tr><td>Revue humaine / navigateur / PR</td><td>Non réalisée.</td><td>Reste décrite par le template, pas vérifiée pendant cette séance.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>
+    Les liens sont relatifs à cette page afin de permettre une vérification directe dans le dépôt.
+    Les chemins vers la documentation reflètent l'emplacement présent dans l'arbre de travail au moment de l'inventaire.
+  </footer>
+</main>
+</body>
+</html>

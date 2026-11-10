@@ -42,6 +42,16 @@ describe("POST /applications", () => {
     expect(unpublished.body.error.code).toBe("OFFER_NOT_PUBLISHED");
   });
 
+  it("refuse un message qui dépasse la limite autorisée", async () => {
+    const response = await request(app)
+      .post("/applications")
+      .set("Authorization", asStudent(STUDENT.LUCAS_DUPONT))
+      .send({ offerId: OFFER.DATA_QUALITY, message: "x".repeat(1001) });
+
+    expect(response.status).toBe(400);
+    expect(response.body.error.code).toBe("INVALID_BODY");
+  });
+
   it("refuse une seconde candidature active sur la même offre", async () => {
     const response = await request(app)
       .post("/applications")
@@ -65,9 +75,44 @@ describe("GET /applications", () => {
     expect(lucas.status).toBe(200);
     expect(ines.status).toBe(200);
     expect(lucas.body).toHaveLength(1);
-    expect(lucas.body[0].id).toBe(1);
+    expect(lucas.body[0]).toMatchObject({
+      id: 1,
+      offerId: OFFER.FLEET_APP,
+      status: "IN_PROGRESS",
+    });
     expect(ines.body).toHaveLength(2);
+    expect(ines.body).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ id: 2, status: "IN_PROGRESS" }),
+        expect.objectContaining({ id: 5, status: "WITHDRAWN" }),
+      ]),
+    );
     expect(ines.body.every((application: { id: number }) => application.id !== 1)).toBe(true);
+  });
+
+  it("retourne les statuts métier d'une candidature", async () => {
+    const selected = await request(app)
+      .get("/applications")
+      .set("Authorization", asStudent(STUDENT.MATEUSZ_KOWALSKI));
+    const rejected = await request(app)
+      .get("/applications")
+      .set("Authorization", asStudent(STUDENT.LEA_MERTENS));
+
+    expect(selected.body).toEqual([
+      expect.objectContaining({ id: 3, status: "SELECTED" }),
+    ]);
+    expect(rejected.body).toEqual([
+      expect.objectContaining({ id: 4, status: "REJECTED" }),
+    ]);
+  });
+
+  it("retourne une liste vide pour un étudiant sans candidature", async () => {
+    const response = await request(app)
+      .get("/applications")
+      .set("Authorization", asStudent(STUDENT.DMYTRO_KOVALENKO));
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual([]);
   });
 });
 
@@ -88,6 +133,15 @@ describe("DELETE /applications/:id", () => {
 
     expect(response.status).toBe(409);
     expect(response.body.error.code).toBe("APPLICATION_PROCESSED");
+  });
+
+  it("refuse le retrait d'une candidature appartenant à un autre étudiant", async () => {
+    const response = await request(app)
+      .delete("/applications/2")
+      .set("Authorization", asStudent(STUDENT.LUCAS_DUPONT));
+
+    expect(response.status).toBe(404);
+    expect(response.body.error.code).toBe("APPLICATION_NOT_FOUND");
   });
 
   it("autorise une nouvelle candidature après retrait", async () => {
