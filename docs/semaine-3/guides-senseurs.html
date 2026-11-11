@@ -355,6 +355,181 @@
   </section>
 
   <section>
+    <h2>Comparaison avec les attentes de Web 2</h2>
+    <p>
+      Cette comparaison s'appuie sur les
+      <a href="https://github.com/e-vinci/BINV2150A-slides">slides officiels de Web 2</a>
+      (séances 01 à 15) et sur le dépôt
+      <a href="https://github.com/e-vinci/BINV2150A-exercices">des exercices</a>.
+      Le dossier <code>solutions/</code> ne contient pas de correction exploitable
+      (seulement <code>.gitkeep</code>) ; les boilerplates confirment toutefois
+      l'organisation backend en contrôleurs, services, modèles et mappers.
+    </p>
+    <div class="note">
+      <strong>Légende :</strong> <span class="tag done">Oui</span> couverture explicite ;
+      <span class="tag described">Partielle</span> couverture implicite ou incomplète ;
+      <span class="tag described">Non</span> absence du guide ;
+      <strong>Contradiction</strong> écart avec une convention enseignée.
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Attente ou convention de Web 2 (source)</th>
+            <th>Guide examiné (fichier et passage)</th>
+            <th>Correspondance</th>
+            <th>Écart ou ajout proposé</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Architecture en couches et séparation des responsabilités.</strong><br>
+              Séance 01 : types et modules ; exercices backend : contrôleurs, services,
+              modèles et mappers.</td>
+            <td><a href="../../.github/copilot-instructions.md">copilot-instructions.md</a>,
+              « Architecture » : <code>controllers → services → repositories → SQLite</code>
+              et <code>pages → hooks → services/utils → models</code>.<br>
+              <a href="../utilitaire/architecture.md">architecture.md</a> détaille les dossiers.</td>
+            <td><span class="tag done">Oui</span></td>
+            <td>Exiger, pour chaque fonctionnalité, le parcours complet des couches backend
+              et frontend, avec les tests correspondants.</td>
+          </tr>
+          <tr>
+            <td><strong>Types explicites, modules et imports cohérents.</strong><br>
+              Séances 01 et 10 : types séparés, imports/exports et organisation par modules.</td>
+            <td><a href="../../.github/copilot-instructions.md">copilot-instructions.md</a>,
+              « Repository-specific conventions » : TypeScript strict, imports backend en
+              <code>.ts</code> et absence de <code>any</code> explicite.</td>
+            <td><span class="tag done">Oui</span></td>
+            <td>Préciser où placer les types frontend partagés et interdire les imports
+              circulaires entre pages, composants et services.</td>
+          </tr>
+          <tr>
+            <td><strong>API REST documentée et usage correct de HTTP.</strong><br>
+              Séance 02 : ressources, verbes HTTP, statuts, erreurs et documentation.</td>
+            <td><a href="../../backend/API.md">backend/API.md</a> décrit routes, corps,
+              réponses JSON et statuts 400/401/403/404/409/500.
+              <a href="../utilitaire/architecture.md">architecture.md</a> impose le format
+              <code>{ error: { code, message } }</code>.</td>
+            <td><span class="tag done">Oui</span></td>
+            <td>Rendre obligatoire la mise à jour de <code>API.md</code> pour chaque route
+              modifiée, avec exemples de succès et d'erreurs.</td>
+          </tr>
+          <tr>
+            <td><strong>Validation des entrées à la frontière de l'API.</strong><br>
+              Séances 02 et 12 : types, longueurs, formulaires et erreurs exploitables.</td>
+            <td><a href="../../.github/copilot-instructions.md">copilot-instructions.md</a>
+              impose la validation dans les contrôleurs ; <a href="../../backend/API.md">API.md</a>
+              documente les limites de <code>q</code> (100) et <code>message</code> (1000).</td>
+            <td><span class="tag done">Oui</span></td>
+            <td>Ajouter la validation frontend comme confort utilisateur, sans remplacer le
+              backend, et exiger un test pour chaque entrée invalide.</td>
+          </tr>
+          <tr>
+            <td><strong>Authentification, autorisation et protection des secrets.</strong><br>
+              Séances 03 et 04 : distinguer authentification/autorisation, JWT, hachage avec
+              sel et interdiction des mots de passe en clair.</td>
+            <td><a href="../../.github/copilot-instructions.md">copilot-instructions.md</a>
+              impose <code>authenticate</code> puis <code>authorize</code> et interdit le mode
+              démo en production ; <a href="../../backend/API.md">API.md</a> décrit sa limite.</td>
+            <td><span class="tag described">Partielle</span></td>
+            <td>Ajouter explicitement : une future authentification réelle doit hacher avec
+              sel, ne jamais journaliser les secrets et les lire depuis l'environnement.</td>
+          </tr>
+          <tr>
+            <td><strong>Événements et formulaires React.</strong><br>
+              Séances 06 et 12 : <code>submit</code>, <code>preventDefault</code>, formulaires
+              contrôlés, validation et état d'erreur.</td>
+            <td><a href="../../.github/copilot-instructions.md">copilot-instructions.md</a>
+              décrit les hooks, l'annulation et <code>onUnauthorized</code> ; le template de PR
+              demande les tests d'erreur.</td>
+            <td><span class="tag described">Partielle</span></td>
+            <td>Ajouter : champs contrôlés, labels associés, erreurs reliées au champ,
+              bouton désactivé pendant l'envoi et traitement explicite succès/échec.</td>
+          </tr>
+          <tr>
+            <td><strong>Composants, props, état et état partagé.</strong><br>
+              Séances 07 à 14 : composants réutilisables, props/children, <code>useState</code>
+              et remontée de l'état.</td>
+            <td><a href="../utilitaire/architecture.md">architecture.md</a> définit les
+              composants réutilisables, les hooks propriétaires de l'état et
+              <code>App.tsx</code> propriétaire de la session.</td>
+            <td><span class="tag done">Oui</span></td>
+            <td>Préciser de ne pas dupliquer une donnée dans plusieurs états et de préférer
+              props/remontée d'état à un accès global implicite.</td>
+          </tr>
+          <tr>
+            <td><strong>Routage et navigation.</strong><br>
+              Séance 15 : une route par page, liens déclaratifs, paramètres et route inconnue.</td>
+            <td><a href="../../.github/copilot-instructions.md">copilot-instructions.md</a>
+              mentionne React Router et les pages par route, sans détailler la navigation
+              ni la route de repli.</td>
+            <td><span class="tag described">Partielle</span></td>
+            <td>Ajouter des routes nommées, des liens accessibles, la conservation de l'URL
+              au rechargement et une page 404 explicite.</td>
+          </tr>
+          <tr>
+            <td><strong>Accessibilité et ergonomie de base.</strong><br>
+              Pour les formulaires et interfaces : HTML sémantique, labels, clavier, focus,
+              boutons corrects, contraste et messages compréhensibles.</td>
+            <td>Aucun passage explicite dans
+              <a href="../../.github/copilot-instructions.md">copilot-instructions.md</a>,
+              <a href="../utilitaire/architecture.md">architecture.md</a> ou
+              <a href="../../backend/API.md">API.md</a>. Le template de PR ne demande pas
+              d'audit d'accessibilité.</td>
+            <td><span class="tag described">Non</span></td>
+            <td>Ajouter une checklist dédiée et demander un test manuel au clavier ; un
+              audit automatisé ne doit pas remplacer cette vérification humaine.</td>
+          </tr>
+          <tr>
+            <td><strong>Tests et validation avant livraison.</strong><br>
+              Les exercices et les séances 06/12 demandent de vérifier comportements,
+              interactions et erreurs.</td>
+            <td><a href="../../.github/copilot-instructions.md">copilot-instructions.md</a>
+              impose lint, typecheck, tests et builds via <code>npm run check</code>.
+              <a href="../../.github/pull_request_template.md">pull_request_template.md</a>
+              demande les tests d'erreur et un test navigateur.</td>
+            <td><span class="tag done">Oui</span></td>
+            <td>Rendre obligatoire un test pour tout nouveau comportement : accès refusé,
+              entrée invalide, chargement, erreur et succès frontend.</td>
+          </tr>
+          <tr>
+            <td><strong>Contradiction identifiée.</strong><br>
+              Web 2 présente JWT et le hachage comme exigences d'une authentification réelle.</td>
+            <td><a href="../../backend/API.md">backend/API.md</a> indique que le lien d'accès
+              e-mail n'est pas implémenté et que le mode démo connecte sans mot de passe,
+              uniquement en développement.</td>
+            <td><span class="tag described">Contradiction encadrée</span></td>
+            <td>Ce choix est une limite documentée du prototype. Ajouter une rubrique
+              « hors production » et rappeler les exigences avant mise en production.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Synthèse et ajouts prioritaires</h2>
+    <div class="card-grid">
+      <article class="card">
+        <h3>Correspondances fortes</h3>
+        <p>L'architecture, TypeScript, REST, la validation backend, l'authentification/
+          autorisation, React et la validation automatisée sont bien guidés et vérifiables.</p>
+      </article>
+      <article class="card">
+        <h3>Couvertures partielles</h3>
+        <p>Les formulaires React, la sécurité liée aux mots de passe et le routage sont
+          mentionnés, mais leurs règles opérationnelles restent incomplètes.</p>
+      </article>
+      <article class="card">
+        <h3>Manque principal</h3>
+        <p>L'accessibilité n'est pas écrite dans les guides. Il faut ajouter sémantique,
+          labels, clavier, focus, contraste et test manuel dans la checklist de PR.</p>
+      </article>
+    </div>
+  </section>
+
+  <section>
     <h2>Journal de vérification de cette séance</h2>
     <div class="table-wrap">
       <table>
