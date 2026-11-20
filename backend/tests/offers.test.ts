@@ -18,6 +18,9 @@ const listOffersAsWithPeriod = (kind: UserKind, id: number, period: string) =>
     .get(`/offers?period=${period}`)
     .set("Authorization", tokenFor(kind, id));
 
+const searchOffersAs = (kind: UserKind, id: number, q: string) =>
+  request(app).get("/offers").query({ q }).set("Authorization", tokenFor(kind, id));
+
 const offerIds = (body: { id: number }[]): number[] => body.map((offer) => offer.id);
 
 describe("GET /offers : accès", () => {
@@ -131,5 +134,58 @@ describe("GET /offers : filtre par période", () => {
 
     expect(response.status).toBe(400);
     expect(response.body.error.code).toBe("INVALID_QUERY");
+  });
+});
+
+describe("GET /offers : recherche par mot-clé", () => {
+  it("cherche une expression entière dans le titre sans distinguer la casse", async () => {
+    const response = await searchOffersAs(
+      "ADMIN",
+      ADMINISTRATOR.ANNE_LECLERCQ,
+      "  TABLEAU DE BORD  ",
+    );
+
+    expect(response.status).toBe(200);
+    expect(offerIds(response.body)).toEqual([OFFER.DATA_QUALITY]);
+  });
+
+  it("ignore une recherche vide", async () => {
+    const response = await searchOffersAs("ADMIN", ADMINISTRATOR.ANNE_LECLERCQ, "   ");
+
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveLength(10);
+  });
+
+  it("combine la recherche avec la période", async () => {
+    const response = await request(app)
+      .get("/offers")
+      .query({ period: "P2", q: "application" })
+      .set("Authorization", tokenFor("ADMIN", ADMINISTRATOR.ANNE_LECLERCQ));
+
+    expect(response.status).toBe(200);
+    expect(offerIds(response.body)).toEqual([OFFER.FLEET_APP, OFFER.CLOUD_MIGRATION]);
+  });
+
+  it("conserve les offres publiées visibles pour un étudiant", async () => {
+    const response = await searchOffersAs(
+      "STUDENT",
+      STUDENT.LUCAS_DUPONT,
+      "application",
+    );
+
+    expect(response.status).toBe(200);
+    expect(offerIds(response.body)).toEqual([OFFER.FLEET_APP]);
+    expect(response.body.every((offer: { status: string }) => offer.status === "PUBLISHED")).toBe(true);
+  });
+
+  it("renvoie une liste vide si aucune offre ne correspond", async () => {
+    const response = await searchOffersAs(
+      "ADMIN",
+      ADMINISTRATOR.ANNE_LECLERCQ,
+      "inexistant",
+    );
+
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual([]);
   });
 });

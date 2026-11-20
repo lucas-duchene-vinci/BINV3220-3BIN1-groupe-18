@@ -138,6 +138,8 @@ récente à la plus ancienne, puis de la plus récente à la plus ancienne.
 ### Filtre facultatif
 
 - `period` : limite les résultats à la période `P1`, `P2` ou `OTHER`.
+- `q` : texte contenu dans le titre, sans distinguer la casse. Les espaces au début et à
+  la fin sont ignorés ; une valeur vide retourne les offres normalement accessibles.
 - Sans ce paramètre, toutes les offres normalement visibles sont retournées.
 
 Exemple : `GET /offers?period=P1`
